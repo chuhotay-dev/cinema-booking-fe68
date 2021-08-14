@@ -18,7 +18,7 @@ function App() {
           <Route path="/theater" component={Theater} />
           <Route path="/review" component={Review} />
           <Route path="/about" component={About} />
-          <Route path="/movie-detail/:id" component={MovieDetail} />
+          <Route path="/movie-detail/:movieID" component={MovieDetail} />
           <Route path="*" component={PageNotFound} />
         </Switch>
       </Router>
