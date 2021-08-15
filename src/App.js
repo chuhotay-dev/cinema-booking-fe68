@@ -7,6 +7,7 @@ import Theater from 'containers/client/Theater/Theater';
 import Header from 'components/Header/Header';
 import MovieDetail from 'containers/client/MovieDetail/MovieDetail';
 import PageNotFound from 'containers/shared/PageNotFound/PageNotFound';
+import SeatPlan from 'containers/client/SeatPlan/SeatPlan';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
           <Route path="/theater" component={Theater} />
           <Route path="/review" component={Review} />
           <Route path="/about" component={About} />
-          <Route path="/movie-detail/:movieID" component={MovieDetail} />
+          <Route path="/movie-detail/:movieId" component={MovieDetail} />
+          <Route path="/seat-plan/:id" component={SeatPlan} />
           <Route path="*" component={PageNotFound} />
         </Switch>
       </Router>

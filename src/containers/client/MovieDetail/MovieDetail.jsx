@@ -1,79 +1,106 @@
-import React, { Component } from "react";
-import axios from "axios";
-
-export default class MovieDetail extends Component {
-  state = {
-    movie: {},
-  };
+import React, { Component } from 'react';
+import movieApi from 'apis/movieApi';
+import { actFetchMovieDetail } from './module/actions';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+class MovieDetail extends Component {
   componentDidMount() {
     const { params } = this.props.match;
-    axios({
-      method: "GET",
-      url: `http://movieapi.cyberlearn.vn/api/QuanLyRap/LayThongTinLichChieuPhim?MaPhim=${params.movieID}`,
-    })
-      .then((res) => this.setState({ movie: res.data.content }))
-      .catch((err) => console.log(err));
+    movieApi
+      .fetchMovieDetailApi(params.movieId)
+      .then(res => {
+        this.props.fetchMovieDetail(res.data.content);
+      })
+      .catch(err => console.log(err));
   }
 
-  renderCinemaGroup = () =>
-    this.state.movie.heThongRapChieu?.map((cinema) => (
-      <a
-        className="nav-link"
-        id="v-pills-home-tab"
-        key={cinema.maHeThongRap}
-        data-toggle="pill"
-        href={`#${cinema.maHeThongRap}`}
-        role="tab"
-        aria-controls="v-pills-home"
-        aria-selected="true"
-      >
-        {cinema.tenHeThongRap}
-      </a>
-    ));
-
-  renderShowtime = () =>
-    this.state.movie.heThongRapChieu?.map((cinema, index) => (
-      <div
-        key={index}
-        className="tab-pane fade show"
-        id={cinema.maHeThongRap}
-        role="tabpanel"
-        aria-labelledby="v-pills-home-tab"
-      >
-        {cinema.cumRapChieu.map((cinemaItem, index) => (
-          <p key={index}>{cinemaItem.tenCumRap}</p>
-        ))}
-      </div>
-    ));
-
   render() {
-    const { movie } = this.state;
-    console.log(movie);
+    const { movieDetail } = this.props;
+
     return (
       <div className="container">
         <div className="row">
           <div className="col-6">
-            <img className="img-fluid" src={movie.hinhAnh} alt={movie.biDanh} />
+            <img
+              className="img-fluid"
+              src={movieDetail.hinhAnh}
+              alt={movieDetail.biDanh}
+            />
           </div>
           <div className="col-6">
-            <h3>{movie.tenPhim}</h3>
-            <p>{movie.moTa}</p>
+            <h3>{movieDetail.tenPhim}</h3>
+            <p>{movieDetail.moTa}</p>
           </div>
         </div>
         <hr />
         <h2>Showtime Info</h2>
         <div className="container">
           <div className="row">
-            <div
-              className="nav flex-column nav-pills"
-              id="v-pills-tab"
-              role="tablist"
-              aria-orientation="vertical"
-            >
-              {this.renderCinemaGroup()}
+            <div className="col-3">
+              <div
+                className="nav flex-column nav-pills text-left"
+                id="v-pills-tab"
+                role="tablist"
+                aria-orientation="vertical"
+              >
+                {movieDetail.heThongRapChieu?.map((heThongRap, idx) => {
+                  return (
+                    <a
+                      className="nav-link"
+                      id="v-pills-home-tab"
+                      data-toggle="pill"
+                      href={`#${heThongRap.maHeThongRap}`}
+                      role="tab"
+                      aria-controls="v-pills-home"
+                      aria-selected="true"
+                    >
+                      <img
+                        src={heThongRap.logo}
+                        width="40px"
+                        className="mr-2"
+                      />
+                      {heThongRap.tenHeThongRap}
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-            <div className="tab-content" id="v-pills-tabContent">
-              {this.renderShowtime()}
+            <div className="col-9">
+              <div className="tab-content" id="v-pills-tabContent">
+                {movieDetail.heThongRapChieu?.map((heThongRap, idx) => {
+                  return (
+                    <div
+                      className="tab-pane fade show"
+                      id={heThongRap.maHeThongRap}
+                      role="tabpanel"
+                      aria-labelledby="v-pills-home-tab"
+                    >
+                      {heThongRap.cumRapChieu.map(cumRap => {
+                        return (
+                          <div className="text-left">
+                            {cumRap.tenCumRap}
+                            <div className="row">
+                              {cumRap.lichChieuPhim.map(lichChieu => {
+                                return (
+                                  <div className="col-3">
+                                    <Link
+                                      to={`/seat-plan/${lichChieu.maLichChieu}`}
+                                    >
+                                      {new Date(
+                                        lichChieu.ngayChieuGioChieu
+                                      ).toLocaleTimeString()}
+                                    </Link>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -81,3 +108,13 @@ export default class MovieDetail extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  movieDetail: state.movieDetailReducer.movieDetail,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchMovieDetail: movie => dispatch(actFetchMovieDetail(movie)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MovieDetail);
