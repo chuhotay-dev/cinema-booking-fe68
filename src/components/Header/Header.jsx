@@ -41,6 +41,11 @@ export default class Header extends Component {
                 About
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/demo-hook">
+                Hook
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

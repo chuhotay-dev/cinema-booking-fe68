@@ -1,23 +1,24 @@
-import React, { Component } from 'react';
-import movieApi from 'apis/movieApi';
+import React, { useEffect } from 'react';
 import { actFetchMovieDetail } from './module/actions';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-class MovieDetail extends Component {
-  componentDidMount() {
-    const { params } = this.props.match;
-    movieApi
-      .fetchMovieDetailApi(params.movieId)
-      .then(res => {
-        this.props.fetchMovieDetail(res.data.content);
-      })
-      .catch(err => console.log(err));
-  }
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import Loader from 'components/Loader/Loader';
 
-  render() {
-    const { movieDetail } = this.props;
+export default function MovieDetail() {
+  const dispatch = useDispatch();
+  const { loading, movieDetail } = useSelector(
+    state => state.movieDetailReducer
+  );
+  const { movieId } = useParams();
 
-    return (
+  useEffect(() => {
+    dispatch(actFetchMovieDetail(movieId));
+  }, []);
+
+  if (loading) return <Loader />;
+
+  return (
+    movieDetail && (
       <div className="container">
         <div className="row">
           <div className="col-6">
@@ -46,7 +47,7 @@ class MovieDetail extends Component {
                 {movieDetail.heThongRapChieu?.map((heThongRap, idx) => {
                   return (
                     <a
-                      className="nav-link"
+                      className={`nav-link ${idx === 0 && 'active'}`}
                       id="v-pills-home-tab"
                       data-toggle="pill"
                       href={`#${heThongRap.maHeThongRap}`}
@@ -70,7 +71,7 @@ class MovieDetail extends Component {
                 {movieDetail.heThongRapChieu?.map((heThongRap, idx) => {
                   return (
                     <div
-                      className="tab-pane fade show"
+                      className={`tab-pane fade show ${idx === 0 && 'active'}`}
                       id={heThongRap.maHeThongRap}
                       role="tabpanel"
                       aria-labelledby="v-pills-home-tab"
@@ -105,16 +106,6 @@ class MovieDetail extends Component {
           </div>
         </div>
       </div>
-    );
-  }
+    )
+  );
 }
-
-const mapStateToProps = state => ({
-  movieDetail: state.movieDetailReducer.movieDetail,
-});
-
-const mapDispatchToProps = dispatch => ({
-  fetchMovieDetail: movie => dispatch(actFetchMovieDetail(movie)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(MovieDetail);
