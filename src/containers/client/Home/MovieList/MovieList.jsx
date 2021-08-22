@@ -1,20 +1,15 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import movieApi from 'apis/movieApi';
-import { actFetchAllMovie } from '../module/actions';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { actFetchAllMovieApi } from "../module/actions";
+import "./MovieList.scss";
 class MovieList extends Component {
   componentDidMount() {
-    movieApi
-      .fecthAllMovieApi()
-      .then(response => {
-        this.props.fetchAllMovie(response.data.content);
-      })
-      .catch(errors => console.log(errors));
+    this.props.fetchAllMovie();
   }
 
   renderListMovie = () =>
-    this.props.listMovie.map(movie => (
+    this.props.listMovie.map((movie) => (
       <div className="col-3 card" key={movie.maPhim}>
         <img className="card-img-top" src={movie.hinhAnh} alt={movie.biDanh} />
         <div className="card-body">
@@ -31,20 +26,26 @@ class MovieList extends Component {
     ));
 
   render() {
-    return (
-      <div className="container">
-        <div className="row">{this.renderListMovie()}</div>
-      </div>
-    );
+    const { isLoading } = this.props;
+    if (isLoading) {
+      return <div className="loader"></div>;
+    } else {
+      return (
+        <div className="container">
+          <div className="row">{this.renderListMovie()}</div>
+        </div>
+      );
+    }
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   listMovie: state.movieReducer.listMovie,
+  isLoading: state.movieReducer.isLoading,
 });
 
-const mapDispatchToProps = dispatch => ({
-  fetchAllMovie: listMovie => dispatch(actFetchAllMovie(listMovie)),
+const mapDispatchToProps = (dispatch) => ({
+  fetchAllMovie: () => dispatch(actFetchAllMovieApi()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MovieList);
