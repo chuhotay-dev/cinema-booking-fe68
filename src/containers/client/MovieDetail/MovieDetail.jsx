@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import Loader from 'components/Loader/Loader';
 
-export default function MovieDetail() {
+export default function MovieDetail(props) {
   const dispatch = useDispatch();
   const { loading, movieDetail } = useSelector(
     state => state.movieDetailReducer

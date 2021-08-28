@@ -46,6 +46,16 @@ export default class Header extends Component {
                 Hook
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/demo-hoc">
+                HOC
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/demo-antd">
+                AntDesign
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>
